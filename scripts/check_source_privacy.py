@@ -7,7 +7,7 @@ import re
 import subprocess
 from pathlib import Path, PurePosixPath
 
-ROOT_FILES = {'main.py', 'README.md', 'SECURITY.md', 'requirements.txt', '.env.example', 'config.example.yaml',
+ROOT_FILES = {'main.py', 'README.md', 'SECURITY.md', 'requirements.txt', 'pytest.ini', '.env.example', 'config.example.yaml',
               '.gitignore', '.gitattributes'}
 PACKAGES = {'core', 'research', 'writing', 'production', 'publishing', 'analytics', 'income', 'tests'}
 SCRIPTS = {'scripts/schedule.ps1', 'scripts/schedule-analytics.ps1', 'scripts/check_source_privacy.py'}
