@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+if [ -n "${YT_PRIVACY_PYTHON:-}" ]; then
+  "$YT_PRIVACY_PYTHON" scripts/check_source_privacy.py --staged
+elif [ -x .venv/Scripts/python.exe ]; then
+  .venv/Scripts/python.exe scripts/check_source_privacy.py --staged
+elif [ -x .venv/bin/python ]; then
+  .venv/bin/python scripts/check_source_privacy.py --staged
+elif command -v py >/dev/null 2>&1; then
+  py -3.11 scripts/check_source_privacy.py --staged
+elif command -v python3 >/dev/null 2>&1; then
+  python3 scripts/check_source_privacy.py --staged
+else
+  python scripts/check_source_privacy.py --staged
+fi

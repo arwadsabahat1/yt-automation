@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} · Studio{% endblock %}
+{% block head %}
+<style>
+  .layout { max-width:1320px; margin:0 auto; padding:24px 28px 48px; display:grid;
+            grid-template-columns:minmax(0,1fr) 380px; gap:28px; align-items:start; }
+  @media (max-width:1000px) { .layout { grid-template-columns:1fr; } }
+
+  /* Explicit sizes: a loaded video otherwise takes its native 1080x1920 size and gets cropped by the frame. */
+  .stage { background:#000; border-radius:var(--radius); overflow:hidden; display:flex; align-items:center;
+           justify-content:center; border:1px solid var(--border); }
+  .stage.long { aspect-ratio:16/9; }
+  .stage.long video { width:100%; height:100%; object-fit:contain; display:block; }
+  .stage.short { height:min(78vh, 760px); background:radial-gradient(circle at center, #1a1a24, #050507); }
+  .stage.short video { height:min(78vh, 760px); width:calc(min(78vh, 760px) * 9 / 16); max-width:100%;
+                       object-fit:contain; display:block; background:#000; }
+  .stage .none { color:var(--faint); }
+
+  .tabs { display:flex; gap:4px; margin:22px 0 14px; border-bottom:1px solid var(--border); }
+  .tab { background:none; color:var(--muted); padding:10px 14px; font-weight:600; border-bottom:2px solid transparent;
+         margin-bottom:-1px; }
+  .tab:hover { color:var(--text); }
+  .tab.on { color:var(--text); border-color:var(--accent); }
+  .pane { display:none; } .pane.on { display:block; }
+
+  .panel { position:sticky; top:88px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+  .panel-sec { padding:18px 20px; border-top:1px solid var(--border); }
+  .panel-sec:first-child { border-top:0; }
+  .nav { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+  .nav .pos { margin-right:auto; }
+  .nav a { width:30px; height:30px; display:grid; place-items:center; border-radius:8px; background:var(--surface-2);
+           border:1px solid var(--border-2); color:var(--text); }
+  .nav a.off { opacity:.3; pointer-events:none; }
+  h1 { font-size:20px; line-height:1.3; letter-spacing:-.015em; margin:12px 0 10px; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; color:var(--muted); font-size:13px; }
+  .note { margin-top:12px; padding:10px 12px; border-radius:8px; background:rgba(248,113,113,.08); color:#fca5a5; font-size:13px; }
+  .actions { display:grid; gap:10px; }
+  .actions .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .keys { color:var(--faint); font-size:12px; text-align:center; }
+  .blockmsg { font-size:13px; color:var(--red); }
+  .sec-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 10px; }
+  .check { display:grid; grid-template-columns:18px 1fr; gap:8px; padding:6px 0; font-size:13px; }
+  .check .ic { font-weight:700; text-align:center; }
+  .check .name { font-weight:600; } .check .detail { color:var(--muted); }
+
+  .field { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; }
+  .field-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); }
+  .field-head b { font-size:13px; }
+  .field pre { margin:0; padding:14px; white-space:pre-wrap; font:13px/1.6 "JetBrains Mono", Consolas, monospace; color:#d8d8e2;
+               max-height:340px; overflow:auto; }
+  .copy-btn { height:30px; padding:0 12px; border-radius:8px; background:var(--surface-2); color:var(--text);
+              border:1px solid var(--border-2); font-weight:600; font-size:12px; }
+  .when { display:flex; gap:14px; align-items:center; padding:14px 16px; border-radius:var(--radius); margin-bottom:14px;
+          background:rgba(255,212,0,.07); border:1px solid rgba(255,212,0,.25); }
+  .when b { font-size:15px; } .when span { color:var(--muted); font-size:13px; }
+  ol.steps { margin:0; padding:14px 14px 14px 34px; } ol.steps li { margin:0 0 8px; color:#d8d8e2; }
+
+  .thumbs { display:grid; gap:14px; }
+  .thumb { display:flex; gap:14px; align-items:end; }
+  .thumb img { border-radius:10px; border:1px solid var(--border); display:block; }
+  .thumb .phone { display:grid; gap:6px; justify-items:start; font-size:12px; color:var(--muted); }
+
+  .script { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:6px 22px 18px; }
+  .script h1 { display:none; }
+  .script h2 { font-size:15px; margin:18px 0 8px; } .script h3 { font-size:14px; color:var(--accent); margin:18px 0 6px; }
+  .script p { margin:8px 0 0; } .script blockquote { margin:2px 0 0 0; padding-left:12px; border-left:2px solid var(--border-2); color:var(--muted); }
+  .script code { font:600 11px "JetBrains Mono"; color:var(--accent); background:rgba(255,212,0,.08); padding:1px 5px; border-radius:4px; }
+  .script ul { padding-left:20px; }
+</style>
+{% endblock %}
+{% block nav %}<a href="/" class="muted">← All videos</a>{% endblock %}
+{% block body %}
+{% set labels = {"long": "Long video", "short": "Short", "cut": "Short · cut from long video"} %}
+<div class="layout">
+  <div>
+    <div class="stage {{ item.fmt }}">
+      {% if item.rendered %}<video src="/files/{{ item.id }}/video.mp4" controls preload="metadata"
+        {% if item.image %}poster="/files/{{ item.image if item.fmt == 'short' else item.id + '/thumbnails/thumb_1_split.jpg' }}"{% endif %}></video>
+      {% else %}<div class="none">Not rendered yet. The daily run renders it.</div>{% endif %}
+    </div>
+
+    <div class="tabs">
+      {% if info %}<button class="tab" data-tab="upload">Upload pack</button>{% endif %}
+      {% if thumbs %}<button class="tab" data-tab="thumbs">Thumbnails</button>{% endif %}
+      <button class="tab" data-tab="script">Script &amp; to-dos</button>
+    </div>
+
+    {% if info %}
+    <div class="pane" id="upload">
+      <div class="when"><div><b>Publish {{ info.publish_audience }}</b><br><span>{{ info.publish_local }} · schedule it in YouTube Studio</span></div></div>
+      {% for label, key in [("Title", "title"), ("Description", "description"), ("Tags", "tags"), ("Pinned comment", "pinned_comment")] %}
+        {% if info[key] %}
+        <div class="field">
+          <div class="field-head"><b>{{ label }}</b><button class="copy-btn" onclick="copyField(this)">Copy</button></div>
+          <pre>{{ info[key] }}</pre>
+        </div>
+        {% endif %}
+      {% endfor %}
+      <div class="field">
+        <div class="field-head"><b>Steps in YouTube Studio</b></div>
+        <ol class="steps">{% for s in info.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if thumbs %}
+    <div class="pane" id="thumbs">
+      <div class="thumbs">
+        {% for t in thumbs %}
+        <div class="thumb">
+          <img src="/files/{{ t }}" width="400" alt="">
+          <div class="phone">As phones show it<img src="/files/{{ t }}" width="168" alt=""></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="pane" id="script"><div class="script">{{ script_html | safe }}</div></div>
+  </div>
+
+  <aside class="panel">
+    <div class="panel-sec">
+      <div class="nav">
+        <span class="pos">{{ position }} of {{ total }}</span>
+        <a href="{{ prev_url }}" class="{{ '' if prev_url else 'off' }}" title="Previous (←)">‹</a>
+        <a href="{{ next_url }}" class="{{ '' if next_url else 'off' }}" title="Next (→)">›</a>
+      </div>
+      <h1>{{ item.title }}</h1>
+      <div class="meta">
+        <span class="badge {{ item.status }}">{{ item.status }}</span>
+        <span>{{ item.publish_date.strftime("%a %d %b") }}</span><span>{{ labels[item.kind] }}</span>
+        {% if item.length %}<span>{{ item.length }}</span>{% endif %}
+      </div>
+      {% if item.note and item.status == "rejected" %}<div class="note">Rejected: {{ item.note }}</div>{% endif %}
+      {% if item.youtube_url %}<div class="meta" style="margin-top:10px"><a href="{{ item.youtube_url }}" target="_blank" style="color:var(--blue)">Open on YouTube ↗</a></div>{% endif %}
+    </div>
+
+    <div class="panel-sec actions">
+      {% if item.status in ("pending", "rejected") %}
+        <button class="btn btn-primary btn-block" id="approve" {% if item.blocked or not item.rendered %}disabled{% endif %} onclick="approve()">Approve</button>
+        {% if item.blocked %}<div class="blockmsg">Fix the ✕ checks below first.</div>{% endif %}
+        <button class="btn btn-danger" onclick="reject()">Reject…</button>
+        <div class="keys"><kbd>A</kbd> approve · <kbd>R</kbd> reject · <kbd>←</kbd> <kbd>→</kbd> browse</div>
+      {% elif item.status == "approved" %}
+        <button class="btn btn-primary btn-block" onclick="uploaded()">Mark as uploaded…</button>
+        <button class="btn btn-ghost" onclick="setStatus('pending')">Undo approval</button>
+        <div class="keys">Upload it with the Upload pack, then mark it here.</div>
+      {% else %}
+        <button class="btn btn-ghost" onclick="setStatus('approved')">Move back to “to upload”</button>
+      {% endif %}
+    </div>
+
+    {% if item.checks %}
+    <div class="panel-sec">
+      <div class="sec-title" style="display:flex; justify-content:space-between">Checks
+        <button class="copy-btn" onclick="recheck()">Re-check</button></div>
+      {% for status in ("fail", "warn", "pass") %}{% for c in item.checks if c.status == status %}
+        <div class="check">
+          <span class="ic {{ {'pass': 'ok', 'warn': 'warn', 'fail': 'bad'}[c.status] }}">{{ {"pass": "✓", "warn": "●", "fail": "✕"}[c.status] }}</span>
+          <div><span class="name">{{ c.name }}</span> <span class="detail">· {{ c.detail }}</span></div>
+        </div>
+      {% endfor %}{% endfor %}
+    </div>
+    {% endif %}
+  </aside>
+</div>
+
+<dialog id="rejectDialog" style="background:var(--surface); color:var(--text); border:1px solid var(--border-2); border-radius:14px; padding:22px; width:min(460px, 92vw)">
+  <form method="dialog" onsubmit="return false">
+    <div class="sec-title">Why reject it?</div>
+    <textarea id="rejectNote" rows="3" placeholder="e.g. the hook is weak, footage doesn't match, wrong fact"
+      style="width:100%; background:var(--bg); color:var(--text); border:1px solid var(--border-2); border-radius:10px; padding:10px; font:inherit; resize:vertical"></textarea>
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px">
+      <button class="btn btn-ghost" onclick="document.getElementById('rejectDialog').close()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmReject()">Reject video</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="uploadDialog" style="background:var(--surface); color:var(--text); border:1px solid var(--border-2); border-radius:14px; padding:22px; width:min(460px, 92vw)">
+  <form method="dialog" onsubmit="return false">
+    <div class="sec-title">YouTube link of the uploaded video</div>
+    <input id="ytUrl" placeholder="https://youtu.be/…" style="width:100%; height:42px; background:var(--bg); color:var(--text); border:1px solid var(--border-2); border-radius:10px; padding:0 12px; font:inherit">
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px">
+      <button class="btn btn-ghost" onclick="document.getElementById('uploadDialog').close()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmUpload()">Save</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ID = {{ item.id | tojson }}, NEXT = {{ next_url | tojson }}, PREV = {{ prev_url | tojson }};
+const tabs = [...document.querySelectorAll(".tab")];
+function show(name) {
+  tabs.forEach(t => t.classList.toggle("on", t.dataset.tab === name));
+  document.querySelectorAll(".pane").forEach(p => p.classList.toggle("on", p.id === name));
+}
+tabs.forEach(t => t.onclick = () => show(t.dataset.tab));
+if (tabs.length) show(tabs[0].dataset.tab);
+
+async function setStatus(status, extra = {}) {
+  if (await post("/api/status", {id: ID, status, ...extra})) location.reload();
+}
+async function approve() {
+  if (await post("/api/status", {id: ID, status: "approved"})) { toast("Approved"); setTimeout(() => location.href = NEXT || location.href, 500); }
+}
+function reject() { const d = document.getElementById("rejectDialog"); d.showModal(); document.getElementById("rejectNote").focus(); }
+async function confirmReject() {
+  const note = document.getElementById("rejectNote").value.trim();
+  if (!note) { toast("Add a short reason"); return; }
+  if (await post("/api/status", {id: ID, status: "rejected", note})) location.href = NEXT || location.href;
+}
+function uploaded() { document.getElementById("uploadDialog").showModal(); document.getElementById("ytUrl").focus(); }
+async function confirmUpload() {
+  const url = document.getElementById("ytUrl").value.trim();
+  if (!url) { toast("Paste the video's link"); return; }
+  setStatus("uploaded", {youtube_url: url});
+}
+async function recheck() { toast("Checking…"); if (await post("/api/recheck", {id: ID, status: "pending"})) location.reload(); }
+function copyField(btn) {
+  navigator.clipboard.writeText(btn.closest(".field").querySelector("pre").innerText);
+  btn.textContent = "Copied ✓"; setTimeout(() => btn.textContent = "Copy", 1500);
+}
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input, textarea") || document.querySelector("dialog[open]")) return;
+  const approveBtn = document.getElementById("approve");
+  if (e.key === "a" && approveBtn && !approveBtn.disabled) approve();
+  else if (e.key === "r" && approveBtn) reject();
+  else if (e.key === "ArrowRight" && NEXT) location.href = NEXT;
+  else if (e.key === "ArrowLeft" && PREV) location.href = PREV;
+});
+</script>
+{% endblock %}

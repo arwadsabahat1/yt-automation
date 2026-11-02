@@ -1,0 +1,23 @@
+{
+  "id": "replace-with-campaign-id",
+  "name": "Copy the real campaign terms here",
+  "platform": "youtube",
+  "source": "../data/private/campaigns/authorized-source.mp4",
+  "source_sha256": "REPLACE_WITH_SHA256_OF_THE_AUTHORIZED_FILE",
+  "source_captions": "../data/private/campaigns/source.srt",
+  "rights": {
+    "granted": false,
+    "holder": "REPLACE_WITH_RIGHTS_HOLDER",
+    "evidence_file": "../data/private/campaigns/permission-and-terms.txt",
+    "platforms": ["youtube"],
+    "expires_at": null
+  },
+  "rules": {
+    "min_seconds": 15,
+    "max_seconds": 60,
+    "caption_mode": "burned",
+    "credit": "",
+    "watermark": null,
+    "cpm_usd": null
+  }
+}

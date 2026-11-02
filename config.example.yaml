@@ -1,0 +1,303 @@
+# Copy to ignored config.yaml and configure your own installation.
+niche: AI tools & productivity
+region: US
+language: en
+keywords:
+- ai tools
+- chatgpt tips
+- ai side hustle
+- ai productivity
+- ai automation
+- best ai apps
+- ai for business
+- make money with ai
+- ai video generator
+- ai coding tools
+niche_terms:
+- ai
+- a.i.
+- chatgpt
+- gpt
+- claude
+- gemini
+- copilot
+- grok
+- llm
+- openai
+- anthropic
+- automation
+- automate
+- productivity
+- prompt
+- prompts
+- agent
+- agents
+- tool
+- tools
+- app
+- apps
+- software
+- coding
+- vibe coding
+- no-code
+- github
+- side hustle
+- workflow
+- notion
+- canva
+- capcut
+- midjourney
+lookback_days: 14
+formats:
+- long
+- short
+radar:
+  results_per_search: 50
+  min_outlier_ratio: 3
+  subs_floor: 1000
+  big_channel_subs: 500000
+  cluster_similarity: 75
+quota:
+  daily_limit: 9000
+scoring:
+  weights:
+    demand: 0.35
+    search: 0.15
+    competition: 0.15
+    ad_value: 0.1
+    affiliate: 0.1
+    ease: 0.1
+    trend: 0.05
+    buzz: 0.0
+  high_rpm_terms:
+  - money
+  - income
+  - business
+  - finance
+  - invest
+  - side hustle
+  - productivity
+  - automation
+  - coding
+  - marketing
+  - sales
+  - saas
+  - freelance
+  - career
+  - startup
+  easy_terms:
+  - how to
+  - tutorial
+  - best
+  - top
+  - tools
+  - apps
+  - tips
+  - guide
+  - vs
+  - review
+  - explained
+  - ways
+  - websites
+  - prompts
+  - free
+  hard_terms:
+  - vlog
+  - reaction
+  - reacts
+  - interview
+  - podcast
+  - live
+  - unboxing
+  - prank
+  - challenge
+  - my day
+  - day in the life
+  - stream
+affiliate_tools:
+- notion
+- elevenlabs
+- descript
+- synthesia
+- heygen
+- pictory
+- invideo
+- canva
+- grammarly
+- jasper
+- writesonic
+- copy.ai
+- surfer
+- make.com
+- murf
+- opus clip
+- fliki
+- semrush
+- hostinger
+- systeme
+trends:
+  enabled: true
+  top_n: 15
+reddit:
+  enabled: false
+  subreddits:
+  - ChatGPT
+  - artificial
+  - productivity
+  - SideProject
+  - Entrepreneur
+  - ArtificialInteligence
+  top_n: 15
+plan:
+  long_days:
+  - Mon
+  - Wed
+  - Fri
+  shorts_per_day: 2
+llm:
+  providers:
+  - name: gemini
+    model: REPLACE_WITH_AVAILABLE_GEMINI_MODEL
+  - name: groq
+    model: REPLACE_WITH_AVAILABLE_GROQ_MODEL
+  temperature: 0.8
+writing:
+  long_words:
+  - 1800
+  - 2400
+  short_words:
+  - 90
+  - 150
+  words_per_minute: 210
+  long_min_minutes: 8
+  min_quality: 7.5
+  max_rewrites: 2
+  max_similarity: 0.15
+  max_screen_clips:
+    long: 4
+    short: 2
+affiliate_links: {}
+voice:
+  voice: am_adam
+  backup_voice: af_heart
+  speed: 1.25
+  line_pause: 0.35
+  chapter_pause: 0.8
+  loudness: -14
+render:
+  encoder: libx264
+  fps: 30
+  bitrate: 10M
+  maxrate: 14M
+  cut_seconds: 4.5
+  hook_cut_seconds: 2.5
+  hook_seconds: 30
+  screen_shot_seconds: 12
+  tail_seconds: 0.6
+  end_screen_seconds: 15
+  motion_strength: 0.08
+  music_volume: 0.35
+  whisper_model: base.en
+  keep_shots: false
+  missing_screen: block
+  card_background_query: blue technology background
+  fallback_queries:
+  - technology abstract
+  - computer work
+  - digital network
+  - office laptop
+  domain_tags:
+  - computer
+  - laptop
+  - technology
+  - tech
+  - code
+  - coding
+  - programming
+  - programmer
+  - developer
+  - software
+  - screen
+  - monitor
+  - keyboard
+  - digital
+  - data
+  - internet
+  - online
+  - network
+  - office
+  - business
+  - desk
+  - phone
+  - smartphone
+  - app
+  - website
+  - robot
+  - ai
+  - artificial
+  - intelligence
+  - cyber
+  - server
+  - analytics
+  - chart
+  - graph
+  - typing
+  - startup
+  - marketing
+  - editing
+  style:
+    accent: '#FFD400'
+    panel: '#0E0E14'
+  captions:
+    long:
+      font: Anton
+      size: 84
+      outline: 5
+      alignment: 2
+      margin_v: 90
+      max_words: 3
+      max_chars: 22
+    short:
+      font: Anton
+      size: 140
+      outline: 8
+      alignment: 2
+      margin_v: 520
+      max_words: 2
+      max_chars: 14
+shorts:
+  per_video: 4
+  min_seconds: 30
+  max_seconds: 58
+  hashtags:
+  - '#shorts'
+  - '#ai'
+  - '#aitools'
+editorial:
+  require_demo_for_tools: true
+  first_demo_seconds:
+    long: 30
+    short: 8
+  max_text_seconds: 5
+  max_graphics_share: 0.55
+schedule:
+  plan_weekday: Mon
+  scripts_per_day: 3
+  render_per_day: 3
+  shorts_from_long: true
+publishing:
+  time: '14:00'
+  timezone: America/New_York
+  api_upload_enabled: false
+  expected_channel_id: ''
+  api_project_audited: false
+analytics:
+  niche: AI tools & productivity
+  monthly_target_usd: 1000
+  data_lag_days: 2
+  min_engaged_views: 100
+  min_peer_videos: 3
+  min_feature_videos: 5
+  min_feature_lift_pp: 10
+  short_hook_review_below: 60
+  ctr_review_below: 3
